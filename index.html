@@ -1,0 +1,95 @@
+<!DOCTYPE html><html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerador de Comandos Git</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: auto;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      background: #3b82f6;
+      color: white;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover { background: #2563eb; }
+    pre {
+      background: #111;
+      color: #0f0;
+      padding: 15px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Gerador de Comandos Git</h2>
+    <p>Digite o hash do commit e escolha o que deseja fazer.</p><label>Hash do Commit:</label>
+<input id="hash" type="text" placeholder="Ex: a7c9e2d1f3" />
+
+<label>Ação desejada:</label>
+<select id="acao">
+  <option value="revert">Reverter sem apagar histórico</option>
+  <option value="reset">Resetar e sobrescrever o main</option>
+  <option value="branch">Criar novo branch a partir do commit</option>
+</select>
+
+<button onclick="gerar()">Gerar Comando</button>
+
+<h3>Resultado:</h3>
+<pre id="output">Aguardando informações...</pre>
+
+  </div>  <script>
+    function gerar() {
+      const hash = document.getElementById('hash').value.trim();
+      const acao = document.getElementById('acao').value;
+      const out = document.getElementById('output');
+
+      if (!hash) {
+        out.textContent = '⚠️ Por favor, insira um hash válido.';
+        return;
+      }
+
+      let comando = '';
+
+      if (acao === 'revert') {
+        comando = `git checkout main\ngit pull\ngit revert --no-commit ${hash}\ngit commit -m "Revertendo para o estado do commit ${hash}"\ngit push`;
+      }
+
+      if (acao === 'reset') {
+        comando = `git checkout main\ngit reset --hard ${hash}\ngit push --force`;
+      }
+
+      if (acao === 'branch') {
+        comando = `git checkout -b versao-${hash.slice(0,6)} ${hash}\ngit push -u origin versao-${hash.slice(0,6)}`;
+      }
+
+      out.textContent = comando;
+    }
+  </script></body>
+</html>
